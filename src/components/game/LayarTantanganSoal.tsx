@@ -38,8 +38,11 @@ interface LayarTantanganSoalProps {
     totalSoal: number
     koinTotal: number
     xpTotal: number
+    sisaNyawa: number
   }) => void
   onJeda: () => void
+  onKembaliKePeta?: () => void
+  onUlangiLevel?: () => void
   sfxEnabled?: boolean
 }
 
@@ -49,6 +52,8 @@ export default function LayarTantanganSoal({
   koinEksplorasi,
   onSelesaiKuis,
   onJeda,
+  onKembaliKePeta,
+  onUlangiLevel,
   sfxEnabled = true,
 }: LayarTantanganSoalProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -60,7 +65,12 @@ export default function LayarTantanganSoal({
   const [correctCount, setCorrectCount] = useState(0)
   const [currentScore, setCurrentScore] = useState(skorEksplorasi)
 
-  const defaultTimer = levelData.waktuTimer || 45
+  // 3 Nyawa (Lives) System
+  const [nyawa, setNyawa] = useState(3)
+  const [heartAnim, setHeartAnim] = useState<number | null>(null)
+  const [isGameOver, setIsGameOver] = useState(false)
+
+  const defaultTimer = levelData.waktuTimer || 50
   const [timerSeconds, setTimerSeconds] = useState(defaultTimer)
 
   const currentSoal = levelData.soalList[currentIndex]
@@ -68,15 +78,35 @@ export default function LayarTantanganSoal({
 
   // Timer countdown
   useEffect(() => {
+    if (isGameOver) return
     const interval = setInterval(() => {
       setTimerSeconds((prev) => (prev > 0 ? prev - 1 : 0))
     }, 1000)
     return () => clearInterval(interval)
-  }, [])
+  }, [isGameOver])
+
+  // Handle timer run out
+  useEffect(() => {
+    if (timerSeconds === 0 && !isAnswerChecked && !isGameOver) {
+      setIsAnswerChecked(true)
+      setIsCorrect(false)
+      playWrong(sfxEnabled)
+      const nextNyawa = Math.max(0, nyawa - 1)
+      setNyawa(nextNyawa)
+      setHeartAnim(nyawa)
+      setTimeout(() => setHeartAnim(null), 800)
+
+      if (nextNyawa <= 0) {
+        setIsGameOver(true)
+      } else {
+        setPembahasanVisible(true)
+      }
+    }
+  }, [timerSeconds, isAnswerChecked, isGameOver, nyawa, sfxEnabled])
 
   // Handle single choice selection
   const handleSelectOption = (optId: string) => {
-    if (isAnswerChecked) return
+    if (isAnswerChecked || isGameOver) return
     setSelectedSingle(optId)
     playPop(sfxEnabled)
 
@@ -93,13 +123,22 @@ export default function LayarTantanganSoal({
       }, 1200)
     } else {
       playWrong(sfxEnabled)
-      setPembahasanVisible(true)
+      const nextNyawa = Math.max(0, nyawa - 1)
+      setNyawa(nextNyawa)
+      setHeartAnim(nyawa)
+      setTimeout(() => setHeartAnim(null), 800)
+
+      if (nextNyawa <= 0) {
+        setIsGameOver(true)
+      } else {
+        setPembahasanVisible(true)
+      }
     }
   }
 
   // Handle multi-select toggle
   const handleToggleMulti = (optId: string) => {
-    if (isAnswerChecked) return
+    if (isAnswerChecked || isGameOver) return
     playPop(sfxEnabled)
     setSelectedMulti((prev) =>
       prev.includes(optId) ? prev.filter((id) => id !== optId) : [...prev, optId]
@@ -108,7 +147,7 @@ export default function LayarTantanganSoal({
 
   // Check multi-select answer
   const handleCheckMulti = () => {
-    if (selectedMulti.length === 0 || isAnswerChecked) return
+    if (selectedMulti.length === 0 || isAnswerChecked || isGameOver) return
 
     const correctList = currentSoal.kunciJawaban as string[]
     const isAllCorrect =
@@ -127,7 +166,16 @@ export default function LayarTantanganSoal({
       }, 1200)
     } else {
       playWrong(sfxEnabled)
-      setPembahasanVisible(true)
+      const nextNyawa = Math.max(0, nyawa - 1)
+      setNyawa(nextNyawa)
+      setHeartAnim(nyawa)
+      setTimeout(() => setHeartAnim(null), 800)
+
+      if (nextNyawa <= 0) {
+        setIsGameOver(true)
+      } else {
+        setPembahasanVisible(true)
+      }
     }
   }
 
@@ -138,6 +186,21 @@ export default function LayarTantanganSoal({
     setPembahasanVisible(false)
     setSelectedSingle(null)
     setSelectedMulti([])
+  }
+
+  // Reset quiz from beginning after Game Over
+  const handleUlangiKuis = () => {
+    setNyawa(3)
+    setIsGameOver(false)
+    setCurrentIndex(0)
+    setSelectedSingle(null)
+    setSelectedMulti([])
+    setIsAnswerChecked(false)
+    setIsCorrect(null)
+    setPembahasanVisible(false)
+    setCorrectCount(0)
+    setCurrentScore(skorEksplorasi)
+    setTimerSeconds(defaultTimer)
   }
 
   // Move to next question or finish
@@ -158,6 +221,7 @@ export default function LayarTantanganSoal({
         totalSoal,
         koinTotal: koinEksplorasi + levelData.hadiahKoin,
         xpTotal: levelData.hadiahXp,
+        sisaNyawa: nyawa,
       })
     }
   }
@@ -211,6 +275,12 @@ export default function LayarTantanganSoal({
         return <IlustrasiBangunGabungan size={145} />
       case 'pizza_tengah':
         return <IlustrasiPizzaTengah size={135} />
+      case 'benda_jam':
+        return <IlustrasiBenda tipe="jam" size={135} />
+      case 'benda_roda':
+        return <IlustrasiBenda tipe="roda" size={135} />
+      case 'benda_pintu':
+        return <IlustrasiBenda tipe="pintu" size={135} />
       case 'grid_lingkaran':
         return (
           <div className="grid-benda-4">
@@ -271,6 +341,25 @@ export default function LayarTantanganSoal({
         >
           ⏸️
         </button>
+
+        {/* 3 NYAWA (LIVES) INDICATOR */}
+        <div className="nyawa-hud-container" title={`Sisa Nyawa: ${nyawa}/3`}>
+          <span className="nyawa-hud-label">Nyawa:</span>
+          <div className="nyawa-hearts-row">
+            {[1, 2, 3].map((num) => {
+              const isAlive = num <= nyawa
+              const isLostNow = heartAnim === num
+              return (
+                <span
+                  key={num}
+                  className={`nyawa-heart-hud ${isAlive ? 'alive' : 'lost'} ${isLostNow ? 'anim-lose-heart' : ''}`}
+                >
+                  {isAlive ? '❤️' : '🖤'}
+                </span>
+              )
+            })}
+          </div>
+        </div>
 
         <div className="timer-track-wrapper">
           <span className="timer-number">{timerSeconds}s</span>
@@ -355,10 +444,15 @@ export default function LayarTantanganSoal({
         </div>
       )}
 
-      {/* 4. EXPLANATION MODAL / POPUP IF WRONG */}
-      {pembahasanVisible && (
+      {/* 4. EXPLANATION MODAL / POPUP IF WRONG (NYAWA BERKURANG) */}
+      {pembahasanVisible && !isGameOver && (
         <div className="pembahasan-popup-overlay">
           <div className="pembahasan-card">
+            <div className="nyawa-lost-warning-badge">
+              <span className="warning-icon">💔</span>
+              <span>Jawaban Salah! <strong>-1 Nyawa</strong> (Sisa: {nyawa}/3 ❤️)</span>
+            </div>
+
             <div className="pembahasan-header">
               <span className="pembahasan-icon">💡</span>
               <h4>Penjelasan Edukasi</h4>
@@ -370,6 +464,46 @@ export default function LayarTantanganSoal({
               </button>
               <button className="btn-lewati-soal" onClick={() => handleNextSoal(false)}>
                 Lanjutkan ➔
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 5. GAME OVER MODAL (NYAWA HABIS = 0) */}
+      {isGameOver && (
+        <div className="game-over-popup-overlay">
+          <div className="game-over-card">
+            <div className="game-over-icon-broken">💔</div>
+            <h3 className="game-over-title">Nyawa Habis!</h3>
+            <p className="game-over-message">
+              Kamu telah kehabisan 3 nyawa pada tantangan ini.
+              Jangan berkecil hati, ayo coba lagi dari awal dan taklukkan semua soal!
+            </p>
+            <div className="game-over-actions">
+              <button
+                className="btn-game-over-retry"
+                onClick={() => {
+                  if (onUlangiLevel) {
+                    onUlangiLevel()
+                  } else {
+                    handleUlangiKuis()
+                  }
+                }}
+              >
+                🔄 Coba Lagi
+              </button>
+              <button
+                className="btn-game-over-map"
+                onClick={() => {
+                  if (onKembaliKePeta) {
+                    onKembaliKePeta()
+                  } else {
+                    onJeda()
+                  }
+                }}
+              >
+                🗺️ Kembali ke Peta
               </button>
             </div>
           </div>

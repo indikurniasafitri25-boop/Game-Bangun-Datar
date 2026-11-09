@@ -10,6 +10,7 @@ interface LayarHasilLevelProps {
   xpTotal: number
   jawabanBenar: number
   totalSoal: number
+  sisaNyawa?: number
   onLanjutkan: () => void
   onKembaliKePeta?: () => void
   onUlangi: () => void
@@ -24,6 +25,7 @@ export default function LayarHasilLevel({
   xpTotal,
   jawabanBenar,
   totalSoal,
+  sisaNyawa = 3,
   onLanjutkan,
   onKembaliKePeta,
   onUlangi,
@@ -108,6 +110,18 @@ export default function LayarHasilLevel({
               </div>
             </div>
 
+            <div className="stat-item-box">
+              <span className="stat-badge-icon">❤️</span>
+              <div className="stat-text-col">
+                <span className="stat-label">Sisa Nyawa</span>
+                <strong className="stat-value highlight-nyawa" style={{ color: '#ef4444' }}>
+                  {sisaNyawa}/3 {sisaNyawa === 3 ? '⭐ Penuh' : ''}
+                </strong>
+              </div>
+            </div>
+          </div>
+
+          <div className="stats-grid-row">
             <div className="stat-item-box wide">
               <span className="stat-badge-icon">📝</span>
               <div className="stat-text-col">

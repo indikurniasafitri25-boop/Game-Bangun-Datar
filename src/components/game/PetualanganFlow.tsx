@@ -40,6 +40,7 @@ export default function PetualanganFlow({
     xpTotal: 100,
     jawabanBenar: 5,
     totalSoal: 5,
+    sisaNyawa: 3,
   })
 
   // Reset when level changes
@@ -73,6 +74,7 @@ export default function PetualanganFlow({
     totalSoal: number
     koinTotal: number
     xpTotal: number
+    sisaNyawa: number
   }) => {
     setFinalStats({
       skorTotal: stats.skorTotal,
@@ -80,6 +82,7 @@ export default function PetualanganFlow({
       xpTotal: stats.xpTotal,
       jawabanBenar: stats.jawabanBenarCount,
       totalSoal: stats.totalSoal,
+      sisaNyawa: stats.sisaNyawa,
     })
 
     // Update global player state (XP, Koin, Level Terbuka, Level Selesai)
@@ -152,6 +155,8 @@ export default function PetualanganFlow({
           koinEksplorasi={koinEksplorasi}
           onSelesaiKuis={handleSelesaiKuis}
           onJeda={() => setIsPaused(true)}
+          onKembaliKePeta={onKembaliKePeta}
+          onUlangiLevel={handleUlangi}
           sfxEnabled={settings.sfx}
         />
       )}
@@ -166,6 +171,7 @@ export default function PetualanganFlow({
           xpTotal={finalStats.xpTotal}
           jawabanBenar={finalStats.jawabanBenar}
           totalSoal={finalStats.totalSoal}
+          sisaNyawa={finalStats.sisaNyawa}
           onLanjutkan={handleLanjutkan}
           onKembaliKePeta={onKembaliKePeta}
           onUlangi={handleUlangi}

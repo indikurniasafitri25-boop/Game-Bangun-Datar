@@ -3828,3 +3828,261 @@ html, body, #root {
   60% { transform: scale(1.2); opacity: 1; }
   100% { transform: scale(1); }
 }
+
+/* ==========================================================================
+   NYAWA (3 LIVES) & CAPAIAN/MISI STYLING
+   ========================================================================== */
+
+/* Nyawa HUD on Quiz Top Bar */
+.nyawa-hud-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 4px 10px;
+  border-radius: 16px;
+  border: 1.5px solid #fecaca;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+.nyawa-hud-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #991b1b;
+}
+.nyawa-hearts-row {
+  display: flex;
+  gap: 2px;
+}
+.nyawa-heart-hud {
+  font-size: 14px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.nyawa-heart-hud.alive {
+  opacity: 1;
+  filter: drop-shadow(0 1px 2px rgba(239, 68, 68, 0.4));
+}
+.nyawa-heart-hud.lost {
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+.anim-lose-heart {
+  animation: loseHeartAnim 0.7s ease forwards;
+}
+
+@keyframes loseHeartAnim {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.5) rotate(-15deg); filter: brightness(1.5); }
+  50% { transform: scale(0.8) rotate(15deg); }
+  75% { transform: scale(1.2) rotate(-5deg); }
+  100% { transform: scale(1) rotate(0); opacity: 0.35; filter: grayscale(1); }
+}
+
+/* Nyawa Meta Pill on Level Detail Screen */
+.meta-pill.nyawa-meta-pill {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+/* Capaian Pembelajaran & Misi Petualangan Cards in LayarDetailLevel */
+.card-section-capaian {
+  text-align: left;
+}
+.badge-capaian {
+  display: inline-block;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 12px;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.teks-capaian-besar {
+  font-size: clamp(13px, 2vh, 16px);
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.detail-card-divider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 4px 0;
+}
+
+.card-section-misi {
+  text-align: left;
+}
+.badge-misi {
+  display: inline-block;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 12px;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.teks-misi-deskripsi {
+  font-size: clamp(12px, 1.8vh, 13.5px);
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 10px;
+  line-height: 1.35;
+}
+
+/* Target Shapes Row (Matches User Image) */
+.target-shapes-row-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 14px;
+  padding: 10px 8px 8px;
+  margin-bottom: 6px;
+}
+.target-shapes-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+.target-shape-card {
+  flex: 1;
+  max-width: 95px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 8px 4px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.15s ease;
+}
+.target-shape-card:hover {
+  transform: translateY(-2px);
+}
+.target-shape-icon-wrap {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.target-shape-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  margin-top: 4px;
+}
+.teks-instruksi-target {
+  font-size: 11px;
+  font-weight: 700;
+  color: #059669;
+  margin: 8px 0 0;
+  text-align: center;
+}
+
+/* Nyawa Lost Warning Badge in Explanation Popup */
+.nyawa-lost-warning-badge {
+  background: #fef2f2;
+  border: 1.5px solid #fecaca;
+  color: #b91c1c;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.warning-icon {
+  font-size: 18px;
+}
+
+/* Game Over Modal (Nyawa Habis) */
+.game-over-popup-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+  padding: 20px;
+  animation: fadeIn 0.25s ease;
+}
+.game-over-card {
+  background: #ffffff;
+  border: 3px solid #fecaca;
+  border-radius: 24px;
+  padding: 26px 20px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes popIn {
+  from { transform: scale(0.85); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.game-over-icon-broken {
+  font-size: 56px;
+  margin-bottom: 4px;
+  animation: shake 0.6s ease;
+}
+.game-over-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #dc2626;
+  margin: 0 0 8px;
+}
+.game-over-message {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0 0 20px;
+}
+.game-over-actions {
+  display: flex;
+  gap: 10px;
+}
+.btn-game-over-retry {
+  flex: 1;
+  background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 16px;
+  padding: 12px 0;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
+  transition: transform 0.1s ease;
+}
+.btn-game-over-retry:active {
+  transform: scale(0.97);
+}
+.btn-game-over-map {
+  flex: 1;
+  background: #f1f5f9;
+  color: #334155;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 16px;
+  padding: 12px 0;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.btn-game-over-map:active {
+  background: #e2e8f0;
+}

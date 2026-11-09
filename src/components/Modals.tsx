@@ -54,6 +54,8 @@ export default function Modals({
   const [jawabanBenar, setJawabanBenar] = useState<boolean | null>(null)
   const [skor, setSkor] = useState(0)
   const [kuisSelesai, setKuisSelesai] = useState(false)
+  const [nyawa, setNyawa] = useState(3)
+  const [isGameOver, setIsGameOver] = useState(false)
 
   const resetKuis = () => {
     setSoalIndex(0)
@@ -61,10 +63,12 @@ export default function Modals({
     setJawabanBenar(null)
     setSkor(0)
     setKuisSelesai(false)
+    setNyawa(3)
+    setIsGameOver(false)
   }
 
   const handleJawab = (index: number) => {
-    if (pilihanTerpilih !== null) return
+    if (pilihanTerpilih !== null || isGameOver) return
     setPilihanTerpilih(index)
     const isCorrect = index === targetLevel.pertanyaan[soalIndex].kunci
     setJawabanBenar(isCorrect)
@@ -74,6 +78,14 @@ export default function Modals({
       setSkor((s) => s + 1)
     } else {
       playWrong(settings.sfx)
+      const nextNyawa = Math.max(0, nyawa - 1)
+      setNyawa(nextNyawa)
+      if (nextNyawa <= 0) {
+        setTimeout(() => {
+          setIsGameOver(true)
+        }, 800)
+        return
+      }
     }
 
     setTimeout(() => {
@@ -559,11 +571,40 @@ export default function Modals({
               <button className="btn-tutup-x" onClick={() => { resetKuis(); onTutup(); }}>×</button>
             </div>
 
-            {!kuisSelesai ? (
+            {isGameOver ? (
+              <div className="area-kuis" style={{ textAlign: 'center', padding: '24px 12px' }}>
+                <div style={{ fontSize: '48px', marginBottom: '8px' }}>💔</div>
+                <h3 style={{ color: '#ef4444', margin: '0 0 8px' }}>Nyawa Habis!</h3>
+                <p style={{ color: '#475569', fontSize: '14px', lineHeight: 1.4, margin: '0 0 20px' }}>
+                  Kamu telah kehabisan 3 nyawa. Jangan menyerah, ayo ulangi kuis dan jawab semua dengan benar!
+                </p>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button className="btn-utama" onClick={resetKuis}>
+                    🔄 Coba Lagi
+                  </button>
+                  <button className="btn-sekunder" onClick={() => { resetKuis(); onTutup(); }}>
+                    Tutup
+                  </button>
+                </div>
+              </div>
+            ) : !kuisSelesai ? (
               <div className="area-kuis">
                 <div className="status-kuis">
                   <span>Soal {soalIndex + 1} dari {targetLevel.pertanyaan.length}</span>
-                  <div className="hati-lives">❤️❤️❤️</div>
+                  <div className="hati-lives" title={`Sisa Nyawa: ${nyawa}/3`}>
+                    {[1, 2, 3].map((n) => (
+                      <span
+                        key={n}
+                        style={{
+                          opacity: n <= nyawa ? 1 : 0.25,
+                          filter: n <= nyawa ? 'none' : 'grayscale(1)',
+                          transition: 'opacity 0.2s',
+                        }}
+                      >
+                        ❤️
+                      </span>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="kartu-soal">
